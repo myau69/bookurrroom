@@ -1,4 +1,4 @@
-module test
+module bookurrroom
 
 go 1.26.1
 
