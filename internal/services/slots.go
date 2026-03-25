@@ -1,13 +1,14 @@
 package services
 
 import (
-	"bookurrroom/internal/models"
-	"bookurrroom/internal/repository"
 	"context"
 	"errors"
 	"time"
 
 	"github.com/google/uuid"
+
+	"bookurrroom/internal/models"
+	"bookurrroom/internal/repository"
 )
 
 var ErrSlotsRoomNotFound = errors.New("slots: room not found")

@@ -1,9 +1,6 @@
 package controllers
 
 import (
-	"bookurrroom/internal/models"
-	"bookurrroom/internal/repository"
-	"bookurrroom/internal/services"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -11,6 +8,10 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+
+	"bookurrroom/internal/models"
+	"bookurrroom/internal/repository"
+	"bookurrroom/internal/services"
 )
 
 type SchedulesHandler struct {
@@ -46,6 +47,21 @@ func NewSchedulesHandler(svc *services.SchedulesService, slots repository.SlotsR
 	}
 }
 
+// @Summary Create room schedule
+// @Tags schedules
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param roomId path string true "Room ID"
+// @Param request body createScheduleRequest true "schedule payload"
+// @Success 201 {object} scheduleCreateResponse
+// @Failure 400 {object} errorPayload
+// @Failure 401 {object} errorPayload
+// @Failure 403 {object} errorPayload
+// @Failure 404 {object} errorPayload
+// @Failure 409 {object} errorPayload
+// @Failure 500 {object} errorPayload
+// @Router /rooms/{roomId}/schedule/create [post]
 func (h *SchedulesHandler) Create(w http.ResponseWriter, r *http.Request) {
 	roomID, err := parsePathUUID(chi.URLParam(r, "roomId"))
 	if err != nil {

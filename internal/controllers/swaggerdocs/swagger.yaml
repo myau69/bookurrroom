@@ -1,0 +1,622 @@
+basePath: /
+definitions:
+  controllers.authTokenResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  controllers.bookingCreateResponse:
+    properties:
+      booking:
+        $ref: '#/definitions/controllers.bookingResponse'
+    type: object
+  controllers.bookingResponse:
+    properties:
+      conferenceLink:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      slotId:
+        type: string
+      status:
+        type: string
+      userId:
+        type: string
+    type: object
+  controllers.bookingsListResponse:
+    properties:
+      bookings:
+        items:
+          $ref: '#/definitions/controllers.bookingResponse'
+        type: array
+      pagination:
+        $ref: '#/definitions/controllers.paginationResponse'
+    type: object
+  controllers.createBookingRequest:
+    properties:
+      createConferenceLink:
+        type: boolean
+      slotId:
+        type: string
+    type: object
+  controllers.createRoomRequest:
+    properties:
+      capacity:
+        type: integer
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  controllers.createScheduleRequest:
+    properties:
+      daysOfWeek:
+        items:
+          type: integer
+        type: array
+      endTime:
+        type: string
+      roomId:
+        type: string
+      startTime:
+        type: string
+    type: object
+  controllers.dummyLoginRequest:
+    properties:
+      role:
+        type: string
+    type: object
+  controllers.errorBody:
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+    type: object
+  controllers.errorPayload:
+    properties:
+      error:
+        $ref: '#/definitions/controllers.errorBody'
+    type: object
+  controllers.infoResponse:
+    properties:
+      status:
+        type: string
+    type: object
+  controllers.loginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  controllers.myBookingsResponse:
+    properties:
+      bookings:
+        items:
+          $ref: '#/definitions/controllers.bookingResponse'
+        type: array
+    type: object
+  controllers.paginationResponse:
+    properties:
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      total:
+        type: integer
+    type: object
+  controllers.registerRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+    type: object
+  controllers.registerResponse:
+    properties:
+      user:
+        $ref: '#/definitions/controllers.userResponse'
+    type: object
+  controllers.roomCreateResponse:
+    properties:
+      room:
+        $ref: '#/definitions/controllers.roomResponse'
+    type: object
+  controllers.roomResponse:
+    properties:
+      capacity:
+        type: integer
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  controllers.roomsListResponse:
+    properties:
+      rooms:
+        items:
+          $ref: '#/definitions/controllers.roomResponse'
+        type: array
+    type: object
+  controllers.scheduleCreateResponse:
+    properties:
+      schedule:
+        $ref: '#/definitions/controllers.scheduleResponse'
+    type: object
+  controllers.scheduleResponse:
+    properties:
+      daysOfWeek:
+        items:
+          type: integer
+        type: array
+      endTime:
+        type: string
+      id:
+        type: string
+      roomId:
+        type: string
+      startTime:
+        type: string
+    type: object
+  controllers.slotResponse:
+    properties:
+      end:
+        type: string
+      id:
+        type: string
+      roomId:
+        type: string
+      start:
+        type: string
+    type: object
+  controllers.slotsListResponse:
+    properties:
+      slots:
+        items:
+          $ref: '#/definitions/controllers.slotResponse'
+        type: array
+    type: object
+  controllers.userResponse:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      role:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: API для бронирования переговорок
+  title: Booking API
+  version: "1.0"
+paths:
+  /_info:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.infoResponse'
+      summary: Service health
+      tags:
+      - info
+  /bookings/{bookingId}/cancel:
+    post:
+      parameters:
+      - description: Booking ID
+        in: path
+        name: bookingId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.bookingCreateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+      security:
+      - BearerAuth: []
+      summary: Cancel booking
+      tags:
+      - bookings
+  /bookings/create:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: booking payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.createBookingRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controllers.bookingCreateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+      security:
+      - BearerAuth: []
+      summary: Create booking
+      tags:
+      - bookings
+  /bookings/list:
+    get:
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.bookingsListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+      security:
+      - BearerAuth: []
+      summary: List all bookings
+      tags:
+      - bookings
+  /bookings/my:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.myBookingsResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+      security:
+      - BearerAuth: []
+      summary: List my bookings
+      tags:
+      - bookings
+  /dummyLogin:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: dummy login payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.dummyLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.authTokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+      summary: Dummy login (test only)
+      tags:
+      - auth
+  /login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: login payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.loginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.authTokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+      summary: Login by email/password
+      tags:
+      - auth
+  /register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: register payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.registerRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controllers.registerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+      summary: Register user
+      tags:
+      - auth
+  /rooms/{roomId}/schedule/create:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Room ID
+        in: path
+        name: roomId
+        required: true
+        type: string
+      - description: schedule payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.createScheduleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controllers.scheduleCreateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+      security:
+      - BearerAuth: []
+      summary: Create room schedule
+      tags:
+      - schedules
+  /rooms/{roomId}/slots/list:
+    get:
+      parameters:
+      - description: Room ID
+        in: path
+        name: roomId
+        required: true
+        type: string
+      - description: Date (YYYY-MM-DD)
+        in: query
+        name: date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.slotsListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+      security:
+      - BearerAuth: []
+      summary: List available room slots by date
+      tags:
+      - slots
+  /rooms/create:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: room payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.createRoomRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controllers.roomCreateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+      security:
+      - BearerAuth: []
+      summary: Create room
+      tags:
+      - rooms
+  /rooms/list:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.roomsListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.errorPayload'
+      security:
+      - BearerAuth: []
+      summary: List rooms
+      tags:
+      - rooms
+schemes:
+- http
+securityDefinitions:
+  BearerAuth:
+    description: 'JWT токен в формате: Bearer <token>'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

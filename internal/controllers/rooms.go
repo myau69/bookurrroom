@@ -1,14 +1,15 @@
 package controllers
 
 import (
-	"bookurrroom/internal/models"
-	"bookurrroom/internal/services"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"time"
 
 	"github.com/google/uuid"
+
+	"bookurrroom/internal/models"
+	"bookurrroom/internal/services"
 )
 
 type RoomsHandler struct {
@@ -33,6 +34,18 @@ func NewRoomsHandler(svc *services.RoomsService) *RoomsHandler {
 	return &RoomsHandler{svc: svc}
 }
 
+// @Summary Create room
+// @Tags rooms
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body createRoomRequest true "room payload"
+// @Success 201 {object} roomCreateResponse
+// @Failure 400 {object} errorPayload
+// @Failure 401 {object} errorPayload
+// @Failure 403 {object} errorPayload
+// @Failure 500 {object} errorPayload
+// @Router /rooms/create [post]
 func (h *RoomsHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var req createRoomRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -56,6 +69,15 @@ func (h *RoomsHandler) Create(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// @Summary List rooms
+// @Tags rooms
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} roomsListResponse
+// @Failure 401 {object} errorPayload
+// @Failure 403 {object} errorPayload
+// @Failure 500 {object} errorPayload
+// @Router /rooms/list [get]
 func (h *RoomsHandler) List(w http.ResponseWriter, r *http.Request) {
 	rooms, err := h.svc.GetList(r.Context())
 	if err != nil {

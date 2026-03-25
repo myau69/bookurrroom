@@ -1,0 +1,108 @@
+version: "2"
+
+run:
+  timeout: 5m
+  relative-path-mode: gomod
+  tests: true
+  modules-download-mode: readonly
+
+linters:
+  default: none
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+  settings:
+    errcheck:
+      check-blank: false
+      check-type-assertions: false
+      disable-default-exclusions: false
+    govet:
+      disable-all: true
+      enable:
+        - printf
+        - errorsas
+        - httpresponse
+        - loopclosure
+        - lostcancel
+        - unreachable
+    ineffassign:
+      check-escaping-errors: false
+    staticcheck:
+      checks:
+        - all
+        - -ST*
+        - -S*
+        - -QF*
+  exclusions:
+    generated: strict
+    warn-unused: true
+    rules:
+      - path: _test\.go
+        linters:
+          - errcheck
+
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+    - golines
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - prefix(promtimtestavito)
+        - blank
+        - dot
+        - alias
+        - localmodule
+      no-inline-comments: true
+      no-prefix-comments: true
+      custom-order: false
+      no-lex-order: false
+
+    gofmt:
+      simplify: true
+
+    gofumpt:
+      module-path: bookurrroom
+
+    goimports:
+      local-prefixes:
+        - bookurrroom
+
+    golines:
+      max-len: 200
+      shorten-comments: false
+      reformat-tags: false
+
+
+
+  exclusions:
+    generated: strict
+
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  uniq-by-line: true
+
+output:
+  formats:
+    text:
+      path: stdout
+      print-linter-name: true
+      print-issued-lines: true
+      colors: true
+  sort-order:
+    - file
+    - linter
+  show-stats: true
+
+
+severity:
+  default: error

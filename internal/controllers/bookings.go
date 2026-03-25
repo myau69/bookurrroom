@@ -45,6 +45,19 @@ func NewBookingsHandler(svc *services.BookingsService) *BookingsHandler {
 	}
 }
 
+// @Summary Create booking
+// @Tags bookings
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body createBookingRequest true "booking payload"
+// @Success 201 {object} bookingCreateResponse
+// @Failure 400 {object} errorPayload
+// @Failure 401 {object} errorPayload
+// @Failure 404 {object} errorPayload
+// @Failure 409 {object} errorPayload
+// @Failure 500 {object} errorPayload
+// @Router /bookings/create [post]
 func (h *BookingsHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var req createBookingRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -85,6 +98,18 @@ func (h *BookingsHandler) Create(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// @Summary List all bookings
+// @Tags bookings
+// @Produce json
+// @Security BearerAuth
+// @Param page query int false "Page number"
+// @Param pageSize query int false "Page size"
+// @Success 200 {object} bookingsListResponse
+// @Failure 400 {object} errorPayload
+// @Failure 401 {object} errorPayload
+// @Failure 403 {object} errorPayload
+// @Failure 500 {object} errorPayload
+// @Router /bookings/list [get]
 func (h *BookingsHandler) ListAll(w http.ResponseWriter, r *http.Request) {
 	page, err := optionalPositiveInt(r.URL.Query().Get("page"))
 	if err != nil {
@@ -123,6 +148,14 @@ func (h *BookingsHandler) ListAll(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// @Summary List my bookings
+// @Tags bookings
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} myBookingsResponse
+// @Failure 401 {object} errorPayload
+// @Failure 500 {object} errorPayload
+// @Router /bookings/my [get]
 func (h *BookingsHandler) ListMy(w http.ResponseWriter, r *http.Request) {
 	principal, ok := principalFromContext(r.Context())
 	if ok == false {
@@ -146,6 +179,18 @@ func (h *BookingsHandler) ListMy(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// @Summary Cancel booking
+// @Tags bookings
+// @Produce json
+// @Security BearerAuth
+// @Param bookingId path string true "Booking ID"
+// @Success 200 {object} bookingCreateResponse
+// @Failure 400 {object} errorPayload
+// @Failure 401 {object} errorPayload
+// @Failure 403 {object} errorPayload
+// @Failure 404 {object} errorPayload
+// @Failure 500 {object} errorPayload
+// @Router /bookings/{bookingId}/cancel [post]
 func (h *BookingsHandler) Cancel(w http.ResponseWriter, r *http.Request) {
 	bookingID, err := parsePathUUID(chi.URLParam(r, "bookingId"))
 	if err != nil {

@@ -1,7 +1,6 @@
 package services
 
 import (
-	"bookurrroom/internal/models"
 	"errors"
 	"sort"
 	"strconv"
@@ -9,6 +8,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+
+	"bookurrroom/internal/models"
 )
 
 var ErrSlotsPlannerInvalidTime = errors.New("slots: planner invalid time")

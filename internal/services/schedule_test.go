@@ -1,14 +1,15 @@
 package services
 
 import (
-	"bookurrroom/internal/models"
-	"bookurrroom/internal/repository"
 	"context"
 	"errors"
 	"testing"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+
+	"bookurrroom/internal/models"
+	"bookurrroom/internal/repository"
 )
 
 type schedulesRepoMock struct {

@@ -1,8 +1,6 @@
 package services
 
 import (
-	"bookurrroom/internal/models"
-	"bookurrroom/internal/repository"
 	"context"
 	"errors"
 	"testing"
@@ -10,6 +8,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+
+	"bookurrroom/internal/models"
+	"bookurrroom/internal/repository"
 )
 
 type bookingsRepoMock struct {

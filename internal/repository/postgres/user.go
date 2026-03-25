@@ -1,13 +1,14 @@
 package postgres
 
 import (
-	"bookurrroom/internal/models"
-	"bookurrroom/internal/repository"
 	"context"
 	"database/sql"
 	"fmt"
 
 	"github.com/google/uuid"
+
+	"bookurrroom/internal/models"
+	"bookurrroom/internal/repository"
 )
 
 type UsersPostgresRepository struct {

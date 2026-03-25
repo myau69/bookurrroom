@@ -1,11 +1,12 @@
 package controllers
 
 import (
-	"bookurrroom/internal/auth"
-	"bookurrroom/internal/models"
 	"context"
 	"net/http"
 	"strings"
+
+	"bookurrroom/internal/auth"
+	"bookurrroom/internal/models"
 )
 
 type principalContextKey struct{}
@@ -23,21 +24,25 @@ func requireAuth(tokens *auth.TokenManager) func(http.Handler) http.Handler {
 				writeError(w, http.StatusUnauthorized, "UNAUTHORIZED", "unauthorized")
 				return
 			}
+
 			const BearerPrefix = "Bearer "
 			if strings.HasPrefix(authHeader, BearerPrefix) == false {
-				writeError(w, http.StatusUnauthorized, "UNAUTHORIZED", "unauthorised")
+				writeError(w, http.StatusUnauthorized, "UNAUTHORIZED", "unauthorized")
 				return
 			}
+
 			token := strings.TrimSpace(strings.TrimPrefix(authHeader, BearerPrefix))
 			if token == "" {
-				writeError(w, http.StatusUnauthorized, "UNAUTHORIZED", "unauthorised")
+				writeError(w, http.StatusUnauthorized, "UNAUTHORIZED", "unauthorized")
 				return
 			}
+
 			principal, err := tokens.Parse(token)
 			if err != nil {
-				writeError(w, http.StatusUnauthorized, "UNAUTHORIZED", "unauthorised")
+				writeError(w, http.StatusUnauthorized, "UNAUTHORIZED", "unauthorized")
 				return
 			}
+
 			next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), principalContextKey{}, principal)))
 		})
 	}
@@ -53,9 +58,10 @@ func requireRoles(roles ...models.Role) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			principal, ok := principalFromContext(r.Context())
 			if ok == false {
-				writeError(w, http.StatusUnauthorized, "UNAUTHORIZED", "unauthorised")
+				writeError(w, http.StatusUnauthorized, "UNAUTHORIZED", "unauthorized")
 				return
 			}
+
 			if _, exists := allowed[principal.Role]; exists == false {
 				writeError(w, http.StatusForbidden, "FORBIDDEN", "forbidden")
 				return

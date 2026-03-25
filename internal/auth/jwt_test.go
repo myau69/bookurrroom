@@ -1,12 +1,13 @@
 package auth
 
 import (
-	"bookurrroom/internal/models"
 	"testing"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+
+	"bookurrroom/internal/models"
 )
 
 func TestTokenManagerIssueParse(t *testing.T) {

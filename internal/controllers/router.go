@@ -1,13 +1,14 @@
 package controllers
 
 import (
+	"net/http"
+
+	"github.com/go-chi/chi/v5"
+
 	"bookurrroom/internal/auth"
 	"bookurrroom/internal/models"
 	"bookurrroom/internal/repository"
 	"bookurrroom/internal/services"
-	"net/http"
-
-	"github.com/go-chi/chi/v5"
 )
 
 func NewRouter(
@@ -33,7 +34,6 @@ func NewRouter(
 	r.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/swagger/index.html", http.StatusTemporaryRedirect)
 	})
-	r.Get("/swagger/openapi.yaml", swaggerOpenAPIHandler)
 	r.Handle("/swagger/*", swaggerUIHandler())
 
 	r.Post("/register", authHandler.Register)

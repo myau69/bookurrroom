@@ -1,11 +1,12 @@
 package services
 
 import (
-	"bookurrroom/internal/models"
 	"context"
 	"errors"
 
 	"github.com/google/uuid"
+
+	"bookurrroom/internal/models"
 )
 
 var (

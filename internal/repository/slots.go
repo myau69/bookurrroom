@@ -1,11 +1,12 @@
 package repository
 
 import (
-	"bookurrroom/internal/models"
 	"context"
 	"time"
 
 	"github.com/google/uuid"
+
+	"bookurrroom/internal/models"
 )
 
 type SlotsRepository interface {

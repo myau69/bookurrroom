@@ -1,14 +1,15 @@
 package services
 
 import (
-	"bookurrroom/internal/models"
-	"bookurrroom/internal/repository"
 	"context"
 	"errors"
 	"strings"
 	"time"
 
 	"github.com/google/uuid"
+
+	"bookurrroom/internal/models"
+	"bookurrroom/internal/repository"
 )
 
 var ErrUsersAlreadyExists = errors.New("users: user with this email already exists")

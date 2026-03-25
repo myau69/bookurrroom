@@ -1,10 +1,11 @@
 package repository
 
 import (
-	"bookurrroom/internal/models"
 	"context"
 
 	"github.com/google/uuid"
+
+	"bookurrroom/internal/models"
 )
 
 type UsersRepository interface {

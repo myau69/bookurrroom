@@ -1,13 +1,14 @@
 package postgres
 
 import (
-	"bookurrroom/internal/models"
-	"bookurrroom/internal/repository"
 	"context"
 	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
+
+	"bookurrroom/internal/models"
+	"bookurrroom/internal/repository"
 )
 
 type SlotsPostgresRepository struct {

@@ -1,12 +1,13 @@
 package repository
 
 import (
-	"bookurrroom/internal/models"
 	"context"
 	"errors"
 	"time"
 
 	"github.com/google/uuid"
+
+	"bookurrroom/internal/models"
 )
 
 var ErrActiveBookingConflict = errors.New("bookings: active booking conflict")

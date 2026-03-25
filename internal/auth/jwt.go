@@ -1,12 +1,13 @@
 package auth
 
 import (
-	"bookurrroom/internal/models"
 	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+
+	"bookurrroom/internal/models"
 )
 
 var ErrInvalidToken = errors.New("auth: invalid token")

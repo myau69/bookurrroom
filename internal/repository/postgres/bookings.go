@@ -1,8 +1,6 @@
 package postgres
 
 import (
-	"bookurrroom/internal/models"
-	"bookurrroom/internal/repository"
 	"context"
 	"database/sql"
 	"errors"
@@ -11,6 +9,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/lib/pq"
+
+	"bookurrroom/internal/models"
+	"bookurrroom/internal/repository"
 )
 
 type BookingsPostgresRepository struct {

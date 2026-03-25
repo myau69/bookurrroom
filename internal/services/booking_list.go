@@ -1,12 +1,13 @@
 package services
 
 import (
-	"bookurrroom/internal/models"
 	"context"
 	"errors"
 	"time"
 
 	"github.com/google/uuid"
+
+	"bookurrroom/internal/models"
 )
 
 var ErrBookingsInvalidPagination = errors.New("bookings: invalid pagination")

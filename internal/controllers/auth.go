@@ -1,9 +1,6 @@
 package controllers
 
 import (
-	"bookurrroom/internal/auth"
-	"bookurrroom/internal/models"
-	"bookurrroom/internal/services"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -12,6 +9,10 @@ import (
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+
+	"bookurrroom/internal/auth"
+	"bookurrroom/internal/models"
+	"bookurrroom/internal/services"
 )
 
 var (
@@ -40,19 +41,25 @@ type dummyLoginRequest struct {
 }
 
 type userResponse struct {
-	ID        uuid.UUID  `json:"ID"`
-	Email     string     `json:"Email"`
-	Role      string     `json:"Role"`
-	CreatedAt *time.Time `json:"CreatedAt"`
+	ID        uuid.UUID  `json:"id"`
+	Email     string     `json:"email"`
+	Role      string     `json:"role"`
+	CreatedAt *time.Time `json:"createdAt"`
 }
 
 func NewAuthHandler(users *services.UsersService, tokens *auth.TokenManager) *AuthHandler {
-	return &AuthHandler{
-		users:  users,
-		tokens: tokens,
-	}
+	return &AuthHandler{users: users, tokens: tokens}
 }
 
+// @Summary Register user
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param request body registerRequest true "register payload"
+// @Success 201 {object} registerResponse
+// @Failure 400 {object} errorPayload
+// @Failure 500 {object} errorPayload
+// @Router /register [post]
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var req registerRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -93,6 +100,16 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// @Summary Login by email/password
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param request body loginRequest true "login payload"
+// @Success 200 {object} authTokenResponse
+// @Failure 400 {object} errorPayload
+// @Failure 401 {object} errorPayload
+// @Failure 500 {object} errorPayload
+// @Router /login [post]
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req loginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -129,6 +146,15 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// @Summary Dummy login (test only)
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param request body dummyLoginRequest true "dummy login payload"
+// @Success 200 {object} authTokenResponse
+// @Failure 400 {object} errorPayload
+// @Failure 500 {object} errorPayload
+// @Router /dummyLogin [post]
 func (h *AuthHandler) DummyLogin(w http.ResponseWriter, r *http.Request) {
 	var req dummyLoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: room-booking-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-booking}
+      POSTGRES_USER: ${POSTGRES_USER:-booking}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-booking}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-booking} -d ${POSTGRES_DB:-booking}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build: .
+    container_name: room-booking-app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      HTTP_PORT: ${HTTP_PORT:-8080}
+      JWT_SECRET: ${JWT_SECRET:-dev-secret}
+      JWT_TTL_HOURS: ${JWT_TTL_HOURS:-24}
+      DATABASE_URL: ${DATABASE_URL:-postgres://booking:booking@db:5432/booking?sslmode=disable}
+      MIGRATIONS_PATH: ${MIGRATIONS_PATH:-/app/migrations}
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

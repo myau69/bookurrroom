@@ -1,14 +1,15 @@
 package controllers
 
 import (
-	"bookurrroom/internal/models"
-	"bookurrroom/internal/services"
 	"errors"
 	"net/http"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+
+	"bookurrroom/internal/models"
+	"bookurrroom/internal/services"
 )
 
 type SlotsHandler struct {
@@ -26,6 +27,19 @@ func NewSlotsHandler(svc *services.SlotsService) *SlotsHandler {
 	return &SlotsHandler{svc: svc}
 }
 
+// @Summary List available room slots by date
+// @Tags slots
+// @Produce json
+// @Security BearerAuth
+// @Param roomId path string true "Room ID"
+// @Param date query string true "Date (YYYY-MM-DD)"
+// @Success 200 {object} slotsListResponse
+// @Failure 400 {object} errorPayload
+// @Failure 401 {object} errorPayload
+// @Failure 403 {object} errorPayload
+// @Failure 404 {object} errorPayload
+// @Failure 500 {object} errorPayload
+// @Router /rooms/{roomId}/slots/list [get]
 func (h *SlotsHandler) ListByRoomAndDate(w http.ResponseWriter, r *http.Request) {
 	roomID, err := parsePathUUID(chi.URLParam(r, "roomId"))
 	if err != nil {
