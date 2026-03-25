@@ -1,4 +1,4 @@
-FROM golang:1.25 AS builder
+FROM golang:1.26.1 AS builder
 
 WORKDIR /src
 
@@ -17,7 +17,6 @@ WORKDIR /app
 COPY --from=builder /out/app /app/app
 COPY --from=builder /out/seed /app/seed
 COPY --from=builder /src/migrations /app/migrations
-COPY --from=builder /src/api.yaml /app/api.yaml
 
 EXPOSE 8080
 
