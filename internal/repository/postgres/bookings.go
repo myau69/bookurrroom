@@ -5,10 +5,12 @@ import (
 	"bookurrroom/internal/repository"
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 type BookingsPostgresRepository struct {
@@ -27,7 +29,7 @@ INSERT INTO bookings (id, slot_id, user_id, status, conference_link, created_at,
 VALUES ($1, $2, $3, $4, $5, $6, $7)
 RETURNING id, slot_id, user_id, status, conference_link, created_at, cancelled_at`
 
-	return r.scanBooking(r.db.QueryRowContext(
+	item, err := r.scanBooking(r.db.QueryRowContext(
 		ctx,
 		q,
 		booking.ID,
@@ -38,6 +40,14 @@ RETURNING id, slot_id, user_id, status, conference_link, created_at, cancelled_a
 		booking.CreatedatUTC,
 		booking.CancelledAtUTC,
 	))
+	if err != nil {
+		if isActiveBookingConflict(err) {
+			return models.Booking{}, repository.ErrActiveBookingConflict
+		}
+		return models.Booking{}, err
+	}
+
+	return item, nil
 }
 
 func (r *BookingsPostgresRepository) GetByID(ctx context.Context, bookingID uuid.UUID) (models.Booking, bool, error) {
@@ -83,7 +93,9 @@ LIMIT $1 OFFSET $2`
 	if err != nil {
 		return nil, 0, err
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	out := make([]models.Booking, 0, pageSize)
 	for rows.Next() {
@@ -113,7 +125,9 @@ ORDER BY s.start_utc ASC`
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	out := make([]models.Booking, 0, 16)
 	for rows.Next() {
@@ -131,6 +145,7 @@ ORDER BY s.start_utc ASC`
 
 func (r *BookingsPostgresRepository) ExistsActiveBySlotID(ctx context.Context, slotID uuid.UUID) (bool, error) {
 	const q = `SELECT EXISTS(SELECT 1 FROM bookings WHERE slot_id = $1 AND status = 'active')`
+	// Проверка бизнес-ограничения: один слот не может иметь более одной активной брони.
 	var exists bool
 	if err := r.db.QueryRowContext(ctx, q, slotID).Scan(&exists); err != nil {
 		return false, err
@@ -177,4 +192,13 @@ func (r *BookingsPostgresRepository) scanBooking(scan rowScanner) (models.Bookin
 	item.CancelledAtUTC = nullTimeUTCPtr(cancelledAt)
 
 	return item, nil
+}
+
+func isActiveBookingConflict(err error) bool {
+	var pqErr *pq.Error
+	if errors.As(err, &pqErr) == false {
+		return false
+	}
+
+	return string(pqErr.Code) == "23505" && pqErr.Constraint == "bookings_one_active_per_slot"
 }

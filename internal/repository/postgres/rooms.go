@@ -21,7 +21,7 @@ func NewRoomsPostgresRepository(db *sql.DB) *RoomsPostgresRepository {
 
 func (r *RoomsPostgresRepository) Create(ctx context.Context, room models.Room) (models.Room, error) {
 	const q = `
-INSERT INTO room (id, name, description, capacity, created_at)
+INSERT INTO rooms (id, name, description, capacity, created_at)
 VALUES ($1, $2, $3, $4, $5)
 RETURNING id, name, description, capacity, created_at`
 
@@ -40,7 +40,9 @@ ORDER BY created_at DESC`
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	out := make([]models.Room, 0, 16)
 	for rows.Next() {

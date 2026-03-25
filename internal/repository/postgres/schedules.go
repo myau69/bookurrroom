@@ -23,10 +23,9 @@ func NewSchedulesPostgresRepository(db *sql.DB) *SchedulesPostgresRepository {
 func (r *SchedulesPostgresRepository) Create(ctx context.Context, schedule models.Schedule) (models.Schedule, error) {
 	const q = `
 INSERT INTO schedules (id, room_id, days_of_week, start_time, end_time, created_at)
-VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, room_id, days_of_week, start_time, end_time, created_at`
+VALUES ($1, $2, $3, $4, $5, $6)`
 
-	return r.scanSchedule(r.db.QueryRowContext(
+	if _, err := r.db.ExecContext(
 		ctx,
 		q,
 		schedule.ID,
@@ -35,7 +34,11 @@ RETURNING id, room_id, days_of_week, start_time, end_time, created_at`
 		schedule.StartTime,
 		schedule.EndTime,
 		schedule.CreatedAtUTC,
-	))
+	); err != nil {
+		return models.Schedule{}, err
+	}
+
+	return schedule, nil
 }
 
 func (r *SchedulesPostgresRepository) GetByRoomID(ctx context.Context, roomID uuid.UUID) (models.Schedule, bool, error) {
@@ -57,12 +60,12 @@ WHERE room_id = $1`
 
 func (r *SchedulesPostgresRepository) scanSchedule(scan rowScanner) (models.Schedule, error) {
 	var out models.Schedule
-	var days []int
+	var daysInt64 []int64
 
 	if err := scan.Scan(
 		&out.ID,
 		&out.RoomID,
-		pq.Array(&days),
+		pq.Array(&daysInt64),
 		&out.StartTime,
 		&out.EndTime,
 		&out.CreatedAtUTC,
@@ -70,6 +73,9 @@ func (r *SchedulesPostgresRepository) scanSchedule(scan rowScanner) (models.Sche
 		return models.Schedule{}, err
 	}
 
-	out.DaysOfWeek = days
+	out.DaysOfWeek = make([]int, 0, len(daysInt64))
+	for _, value := range daysInt64 {
+		out.DaysOfWeek = append(out.DaysOfWeek, int(value))
+	}
 	return out, nil
 }

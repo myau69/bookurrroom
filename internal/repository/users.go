@@ -1,13 +1,13 @@
 package repository
 
 import (
-	"context"
 	"bookurrroom/internal/models"
+	"context"
 
 	"github.com/google/uuid"
 )
 
-type UserRepository interface {
+type UsersRepository interface {
 	Create(ctx context.Context, user models.User) (models.User, error)
 	GetByID(ctx context.Context, id uuid.UUID) (models.User, bool, error)
 	GetByEmail(ctx context.Context, email string) (models.User, bool, error)

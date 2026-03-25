@@ -3,13 +3,16 @@ package repository
 import (
 	"bookurrroom/internal/models"
 	"context"
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
 )
 
+var ErrActiveBookingConflict = errors.New("bookings: active booking conflict")
+
 type BookingsRepository interface {
-	Create(ctx context.Context, boking models.Booking) (models.Booking, error)
+	Create(ctx context.Context, booking models.Booking) (models.Booking, error)
 	GetByID(ctx context.Context, bookingID uuid.UUID) (models.Booking, bool, error)
 	Cancel(ctx context.Context, bookingID uuid.UUID) (models.Booking, error)
 	ListAll(ctx context.Context, page, pageSize int) ([]models.Booking, int, error)

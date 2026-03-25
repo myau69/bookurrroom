@@ -25,28 +25,18 @@ func (r *SlotsPostgresRepository) UpsertMany(ctx context.Context, values []model
 		return nil
 	}
 
-	tx, err := r.db.BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	stmt, err := tx.PrepareContext(ctx, `
+	const q = `
 INSERT INTO slots (id, room_id, start_utc, end_utc)
 VALUES ($1, $2, $3, $4)
-ON CONFLICT (room_id, start_utc, end_utc) DO NOTHING`)
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
+ON CONFLICT ON CONSTRAINT slots_room_time_uniq DO NOTHING`
 
 	for _, item := range values {
-		if _, err := stmt.ExecContext(ctx, item.ID, item.RoomID, item.StartUTC, item.EndUTC); err != nil {
+		if _, err := r.db.ExecContext(ctx, q, item.ID, item.RoomID, item.StartUTC, item.EndUTC); err != nil {
 			return err
 		}
 	}
 
-	return tx.Commit()
+	return nil
 }
 
 func (r *SlotsPostgresRepository) ListFreeByRoomAndDate(ctx context.Context, roomID uuid.UUID, date time.Time) ([]models.Slot, error) {
@@ -69,7 +59,9 @@ ORDER BY s.start_utc ASC`
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	out := make([]models.Slot, 0, 32)
 	for rows.Next() {

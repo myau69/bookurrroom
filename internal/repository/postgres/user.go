@@ -23,8 +23,9 @@ func NewUsersPostgresRepository(db *sql.DB) *UsersPostgresRepository {
 func (r *UsersPostgresRepository) Create(ctx context.Context, user models.User) (models.User, error) {
 	const q = `
 INSERT INTO users (id, email, role, created_at, password_hash)
-VALUES ($1, $2, $3, $4, %5)
+VALUES ($1, $2, $3, $4, $5)
 RETURNING id, email, role, created_at, password_hash`
+
 	return r.scanUser(
 		r.db.QueryRowContext(ctx, q, user.ID, user.Email, string(user.Role), user.CreatedAtUTC, user.PasswordHash),
 	)
@@ -60,7 +61,9 @@ ORDER BY created_at DESC`
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	out := make([]models.User, 0, 16)
 	for rows.Next() {
